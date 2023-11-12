@@ -9,7 +9,9 @@ import com.example.news_service.service.CommentService;
 import com.example.news_service.service.NewsService;
 import com.example.news_service.service.UserService;
 import com.example.news_service.web.dto.comment.AllCommentsForNewsRequest;
+import io.swagger.v3.oas.annotations.Operation;
 import jakarta.persistence.EntityNotFoundException;
+import jakarta.transaction.Transactional;
 import lombok.AllArgsConstructor;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
@@ -49,6 +51,33 @@ public class PgCommentService implements CommentService {
     comment.setUserComment( user );
 
     return commentRepository.save( comment );
+  }
+
+  @Operation(
+          summary = "Создать комментарий + пользователя",
+          description = "Создать комментарий + пользователя",
+          tags = { "news", "user", "comment" }
+  )
+
+  @Override
+  @Transactional
+  public Comment saveWithUser( User user, Comment comment, Long newsId ) {
+    User newUser = userService.save( user );
+    comment.setUserComment( newUser );
+
+    News newsInId = new News();
+    newsInId.setId( newsId );
+    comment.setNewsComment( newsInId );
+
+    return save( comment );
+  }
+
+  @Override
+  public Comment prepareUpdate( Long id, String text ) {
+    Comment currentComment = findById( id );
+    currentComment.setText( text );
+
+    return currentComment;
   }
 
   @Override

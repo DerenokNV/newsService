@@ -1,10 +1,7 @@
 package com.example.news_service.mapper;
 
 import com.example.news_service.model.Comment;
-import com.example.news_service.web.dto.comment.CommentCreateRequest;
-import com.example.news_service.web.dto.comment.CommentListResponse;
-import com.example.news_service.web.dto.comment.CommentResponse;
-import com.example.news_service.web.dto.comment.CommentUpdateRequest;
+import com.example.news_service.web.dto.comment.*;
 import org.mapstruct.DecoratedWith;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
@@ -22,6 +19,8 @@ public interface CommentMapper {
   Comment requestToComment( Long commentId, CommentUpdateRequest commentRequest );
 
   CommentResponse commentToResponse( Comment comment );
+
+  Comment commentWithUserRequestToComment( CommentWithUserRequest request );
 
   default CommentListResponse commentListToCommentListResponse( List<Comment> comments ) {
     CommentListResponse response = new CommentListResponse();
