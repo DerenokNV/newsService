@@ -9,7 +9,6 @@ import com.example.news_service.service.CommentService;
 import com.example.news_service.service.NewsService;
 import com.example.news_service.service.UserService;
 import com.example.news_service.web.dto.comment.AllCommentsForNewsRequest;
-import com.example.news_service.web.dto.comment.CommentCreateRequest;
 import io.swagger.v3.oas.annotations.Operation;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.transaction.Transactional;
@@ -70,9 +69,7 @@ public class PgCommentService implements CommentService {
     newsInId.setId( newsId );
     comment.setNewsComment( newsInId );
 
-    Comment newComment = save( comment );
-
-    return newComment;
+    return save( comment );
   }
 
   @Override

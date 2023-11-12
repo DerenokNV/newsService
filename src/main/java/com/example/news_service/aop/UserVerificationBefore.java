@@ -24,8 +24,8 @@ public class UserVerificationBefore {
   private static final String ERROR_TEXT ="Редактирование и удаление новости/комментария, разрешается только тому пользователю, который её создал";
 
   @Before("@annotation(UserVerification)")
-  public void logBefore( JoinPoint joinPoint ) {
-    String userId = null;
+  public void logBefore( JoinPoint joinPoint ) throws Exception {
+    String userId;
     String objectUserId = null;
 
     Optional<Object> objectUserIdOpt = Arrays.stream( joinPoint.getArgs() ).filter( x -> (String.valueOf( x )).contains( "ObjectUserId" ) ).findFirst();
@@ -45,7 +45,7 @@ public class UserVerificationBefore {
 
     log.info( " Params - userId:{} and objectUserId:{}", userId, objectUserId );
 
-    if ( userId == null || objectUserId == null || "".equals( userId ) || "".equals( objectUserId ) ||
+    if ( userId == null || objectUserId == null || userId.isEmpty() || objectUserId.isEmpty() ||
          ! Objects.equals( userId, objectUserId ) ) {
       throw new EntityNotFoundException( ERROR_TEXT );
     }

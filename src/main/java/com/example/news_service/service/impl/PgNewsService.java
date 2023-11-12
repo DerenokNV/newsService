@@ -43,10 +43,8 @@ public class PgNewsService implements NewsService {
 
   @Override
   public List<News> findAll( PagesRequest pagesRequest ) {
-    List<News> result = repository.findAll( PageRequest.of( pagesRequest.getPageNumber(), pagesRequest.getPageSize() ) )
+    return repository.findAll( PageRequest.of( pagesRequest.getPageNumber(), pagesRequest.getPageSize() ) )
                                   .getContent();
-
-    return result;
   }
 
   @Override
@@ -80,9 +78,7 @@ public class PgNewsService implements NewsService {
     news.setCategory( category );
     news.setUser( newUser );
 
-    News newNews = repository.save( news );
-
-    return newNews;
+    return repository.save( news );
   }
 
   @Override

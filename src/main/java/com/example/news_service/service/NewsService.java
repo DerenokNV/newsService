@@ -4,7 +4,6 @@ import com.example.news_service.model.News;
 import com.example.news_service.model.User;
 import com.example.news_service.web.dto.PagesRequest;
 import com.example.news_service.web.dto.news.NewsFilterRequest;
-import com.example.news_service.web.dto.news.NewsWithUserRequest;
 
 import java.util.List;
 
