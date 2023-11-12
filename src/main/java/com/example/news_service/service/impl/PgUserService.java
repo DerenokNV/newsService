@@ -5,7 +5,6 @@ import com.example.news_service.repository.UserRepository;
 import com.example.news_service.service.UserService;
 import com.example.news_service.web.dto.PagesRequest;
 import jakarta.persistence.EntityNotFoundException;
-import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;

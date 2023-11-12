@@ -3,9 +3,7 @@ package com.example.news_service.web.controller;
 import com.example.news_service.mapper.NewsMapper;
 import com.example.news_service.mapper.UserMapper;
 import com.example.news_service.model.News;
-import com.example.news_service.model.User;
 import com.example.news_service.service.NewsService;
-import com.example.news_service.service.UserService;
 import com.example.news_service.web.dto.PagesRequest;
 import com.example.news_service.web.dto.news.*;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -24,8 +22,6 @@ public class NewsController {
   private final NewsService service;
 
   private final NewsMapper mapper;
-
-  private final UserService userService;
 
   private final UserMapper userMapper;
 
@@ -61,12 +57,10 @@ public class NewsController {
 
   @PostMapping("/newsWithUser")
   public ResponseEntity<NewsResponse> createNewsWithUser( @RequestBody @Valid NewsWithUserRequest request ) {
-    User newUser = userService.save( userMapper.userRequestToUser( request ) );
-    NewsRequest newsRequest = new NewsRequest( request.getText(), newUser.getId(), request.getCategoryId() );
-    News newNews = service.save( mapper.requestToNews( newsRequest ) );
-
     return ResponseEntity.status( HttpStatus.CREATED )
-            .body( mapper.newsToResponse( newNews ) );
+            .body( mapper.newsToResponse(
+                    service.saveWithUser( userMapper.userRequestToUser( request ), mapper.newsWithUserRequestToNews( request ), request.getCategoryId() )
+                 ));
   }
 
 

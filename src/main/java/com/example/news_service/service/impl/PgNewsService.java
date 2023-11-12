@@ -11,6 +11,7 @@ import com.example.news_service.service.NewsService;
 import com.example.news_service.service.UserService;
 import com.example.news_service.web.dto.PagesRequest;
 import com.example.news_service.web.dto.news.NewsFilterRequest;
+import io.swagger.v3.oas.annotations.Operation;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -50,6 +51,7 @@ public class PgNewsService implements NewsService {
 
   @Override
   public News findById( Long id ) {
+    log.error( "Запрашиваем ID новости: " );
     return repository.findById( id ).orElseThrow(
             () -> new EntityNotFoundException( MessageFormat.format( "Новость с ID {0} не найдена!", id ) )
     );
@@ -66,11 +68,29 @@ public class PgNewsService implements NewsService {
     return repository.save( news );
   }
 
+  @Operation(
+          summary = "Создать новость + пользователя",
+          description = "Создать новость + пользователя",
+          tags = { "news", "user" }
+  )
+  @Override
+  public News saveWithUser( User user, News news, Long categoryId ) {
+    User newUser = userService.save( user );
+    NewsCategory category = categoryService.findById( categoryId );
+    news.setCategory( category );
+    news.setUser( newUser );
+
+    News newNews = repository.save( news );
+
+    return newNews;
+  }
+
   @Override
   @UserVerification
   public News update( News news, String paramNewsUserId ) {
     return repository.save( news );
   }
+
 
   @Override
   @UserVerification

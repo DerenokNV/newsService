@@ -21,6 +21,8 @@ public interface NewsMapper {
   @Named(value = "commentMethod")
   NewsWithListCommentResponse newsToNewsCommentResponse( News news );
 
+  News newsWithUserRequestToNews( NewsWithUserRequest request );
+
   default NewsListResponse newsListToNewsListResponse( List<News> news ) {
     NewsListResponse response = new NewsListResponse();
     List<NewsWithCountCommentResponse> results = new ArrayList<>();

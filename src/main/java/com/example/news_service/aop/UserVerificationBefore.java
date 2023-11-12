@@ -1,6 +1,6 @@
 package com.example.news_service.aop;
 
-import com.example.news_service.exception.EntityNotFoundException;
+import jakarta.persistence.EntityNotFoundException;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.extern.slf4j.Slf4j;
 import org.aspectj.lang.JoinPoint;

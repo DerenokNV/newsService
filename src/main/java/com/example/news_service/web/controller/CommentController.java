@@ -3,9 +3,7 @@ package com.example.news_service.web.controller;
 import com.example.news_service.mapper.CommentMapper;
 import com.example.news_service.mapper.UserMapper;
 import com.example.news_service.model.Comment;
-import com.example.news_service.model.User;
 import com.example.news_service.service.CommentService;
-import com.example.news_service.service.UserService;
 import com.example.news_service.web.dto.comment.*;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
@@ -24,8 +22,6 @@ public class CommentController {
 
   private final CommentMapper mapper;
 
-  private final UserService userService;
-
   private final UserMapper userMapper;
 
   @PostMapping
@@ -38,9 +34,7 @@ public class CommentController {
 
   @PostMapping("/withUser")
   public ResponseEntity<CommentResponse> createCommentWithUser( @RequestBody @Valid CommentWithUserRequest request ) {
-    User newUser = userService.save( userMapper.userRequestToUser( request ) );
-    Comment newComment = service.save( mapper.commentCteateRequestToComment( new CommentCreateRequest( request.getText(), newUser.getId(), request.getNewsId() ) ) );
-    newComment.setUserComment( newUser );
+    Comment newComment = service.saveWithUser( userMapper.userRequestToUser( request ), mapper.commentWithUserRequestToComment( request ), request.getNewsId() );
 
     return ResponseEntity.status( HttpStatus.CREATED )
             .body( mapper.commentToResponse( newComment ) );
@@ -63,8 +57,7 @@ public class CommentController {
   @PutMapping("/{id}")
   public ResponseEntity<CommentResponse> update( @PathVariable Long id,
                                                  @RequestBody @Valid CommentUpdateRequest request ) {
-    Comment currentComment = service.findById( id );
-    currentComment.setText( request.getText() );
+    Comment currentComment = service.prepareUpdate( id, request.getText() );
     currentComment = service.update( currentComment, "ObjectUserId:" + currentComment.getUserComment().getId() );
 
     return ResponseEntity.ok( mapper.commentToResponse( currentComment ) );
