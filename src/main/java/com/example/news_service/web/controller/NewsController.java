@@ -26,57 +26,47 @@ public class NewsController {
   private final UserMapper userMapper;
 
   @GetMapping("/filter")
-  public ResponseEntity<NewsListResponse> filterBy( @Valid NewsFilterRequest filter ) {
-    return  ResponseEntity.ok(
-            mapper.newsListToNewsListResponse( service.filterBy( filter ) )
-    );
+  public NewsListResponse filterBy( @Valid NewsFilterRequest filter ) {
+    return  mapper.newsListToNewsListResponse( service.filterBy( filter ) );
   }
 
   @GetMapping
-  public ResponseEntity<NewsListResponse> findAll( @Valid PagesRequest pagesRequest ) {
-    return ResponseEntity.ok(
-            mapper.newsListToNewsListResponse( service.findAll( pagesRequest ) )
-    );
+  public NewsListResponse findAll( @Valid PagesRequest pagesRequest ) {
+    return mapper.newsListToNewsListResponse( service.findAll( pagesRequest ) );
   }
 
 
   @GetMapping("/{id}")
-  public ResponseEntity<NewsWithListCommentResponse> findById( @PathVariable Long id ) {
-    return ResponseEntity.ok(
-            mapper.newsToNewsCommentResponse( service.findById( id ) )
-    );
+  public NewsWithListCommentResponse findById( @PathVariable Long id ) {
+    return mapper.newsToNewsCommentResponse( service.findById( id ) );
   }
 
   @PostMapping
-  public ResponseEntity<NewsResponse> create( @RequestBody @Valid NewsRequest request ) {
+  public NewsResponse create( @RequestBody @Valid NewsRequest request ) {
     News newNews = service.save( mapper.requestToNews( request ) );
 
-    return ResponseEntity.status( HttpStatus.CREATED )
-                         .body( mapper.newsToResponse( newNews ) );
+    return mapper.newsToResponse( newNews );
   }
 
   @PostMapping("/newsWithUser")
-  public ResponseEntity<NewsResponse> createNewsWithUser( @RequestBody @Valid NewsWithUserRequest request ) {
-    return ResponseEntity.status( HttpStatus.CREATED )
-            .body( mapper.newsToResponse(
+  public NewsResponse createNewsWithUser( @RequestBody @Valid NewsWithUserRequest request ) {
+    return mapper.newsToResponse(
                     service.saveWithUser( userMapper.userRequestToUser( request ), mapper.newsWithUserRequestToNews( request ), request.getCategoryId() )
-                 ));
+                 );
   }
 
 
   @PutMapping("/{id}")
-  public ResponseEntity<NewsResponse> update( @PathVariable Long id,
+  public NewsResponse update( @PathVariable Long id,
                                               @RequestBody @Valid NewsRequest request ) {
     News updateNews = service.update( mapper.requestToNews( id, request ), "ObjectUserId:" + request.getUserId() );
 
-    return ResponseEntity.ok( mapper.newsToResponse( updateNews ) );
+    return mapper.newsToResponse( updateNews );
   }
 
   @DeleteMapping("/{id}")
-  public ResponseEntity<Void> deleteById( @PathVariable Long id ) {
+  public void deleteById( @PathVariable Long id ) {
     News deleteNews = service.findById( id );
     service.deleteById( id, "ObjectUserId:" + deleteNews.getUser().getId() );
-
-    return ResponseEntity.noContent().build();
   }
 }

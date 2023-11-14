@@ -25,50 +25,42 @@ public class CommentController {
   private final UserMapper userMapper;
 
   @PostMapping
-  public ResponseEntity<CommentResponse> create( @RequestBody @Valid CommentCreateRequest request ) {
+  public CommentResponse create( @RequestBody @Valid CommentCreateRequest request ) {
     Comment newComment = service.save( mapper.commentCteateRequestToComment( request ) );
 
-    return ResponseEntity.status( HttpStatus.CREATED )
-            .body( mapper.commentToResponse( newComment ) );
+    return mapper.commentToResponse( newComment );
   }
 
   @PostMapping("/withUser")
-  public ResponseEntity<CommentResponse> createCommentWithUser( @RequestBody @Valid CommentWithUserRequest request ) {
+  public CommentResponse createCommentWithUser( @RequestBody @Valid CommentWithUserRequest request ) {
     Comment newComment = service.saveWithUser( userMapper.userRequestToUser( request ), mapper.commentWithUserRequestToComment( request ), request.getNewsId() );
 
-    return ResponseEntity.status( HttpStatus.CREATED )
-            .body( mapper.commentToResponse( newComment ) );
+    return mapper.commentToResponse( newComment );
   }
 
   @GetMapping
-  public ResponseEntity<CommentListResponse> findAllByNews( @Valid AllCommentsForNewsRequest pagesRequest ) {
-    return ResponseEntity.ok(
-            mapper.commentListToCommentListResponse( service.findAll( pagesRequest ) )
-    );
+  public CommentListResponse findAllByNews( @Valid AllCommentsForNewsRequest pagesRequest ) {
+    return mapper.commentListToCommentListResponse( service.findAll( pagesRequest ) );
   }
 
   @GetMapping("/{id}")
-  public ResponseEntity<CommentResponse> findById( @PathVariable Long id ) {
-    return ResponseEntity.ok(
-            mapper.commentToResponse( service.findById( id ) )
-    );
+  public CommentResponse findById( @PathVariable Long id ) {
+    return mapper.commentToResponse( service.findById( id ) );
   }
 
   @PutMapping("/{id}")
-  public ResponseEntity<CommentResponse> update( @PathVariable Long id,
+  public CommentResponse update( @PathVariable Long id,
                                                  @RequestBody @Valid CommentUpdateRequest request ) {
     Comment currentComment = service.prepareUpdate( id, request.getText() );
     currentComment = service.update( currentComment, "ObjectUserId:" + currentComment.getUserComment().getId() );
 
-    return ResponseEntity.ok( mapper.commentToResponse( currentComment ) );
+    return mapper.commentToResponse( currentComment );
   }
 
   @DeleteMapping("/{id}")
-  public ResponseEntity<Void> deleteById( @PathVariable Long id ) {
+  public void deleteById( @PathVariable Long id ) {
     Comment deleteComment = service.findById( id );
     service.deleteById( id, "ObjectUserId:" + deleteComment.getUserComment().getId() );
-
-    return ResponseEntity.noContent().build();
   }
 
 }

@@ -23,46 +23,37 @@ public class UserController {
   private final UserMapper userMapper;
 
   @GetMapping
-  public ResponseEntity<UserListResponse> findAll( @Valid PagesRequest pagesRequest ) {
-    return ResponseEntity.ok(
-            userMapper.userListToUserListResponse( pgUserService.findAll( pagesRequest ) )
-    );
+  public UserListResponse findAll( @Valid PagesRequest pagesRequest ) {
+    return userMapper.userListToUserListResponse( pgUserService.findAll( pagesRequest ) );
   }
 
   @GetMapping("/withNews")
-  public ResponseEntity<UserWithNewsListResponse> findAllWithNews( @Valid PagesRequest pagesRequest ) {
-    return ResponseEntity.ok(
-            userMapper.userWithNewsListToUserListResponse( pgUserService.findAll( pagesRequest ) )
-    );
+  public UserWithNewsListResponse findAllWithNews( @Valid PagesRequest pagesRequest ) {
+    return userMapper.userWithNewsListToUserListResponse( pgUserService.findAll( pagesRequest ) );
   }
 
   @GetMapping("/{id}")
-  public ResponseEntity<UserResponse> findById( @PathVariable Long id ) {
-    return ResponseEntity.ok(
-            userMapper.userToResponse( pgUserService.findById( id ) )
-    );
+  public UserResponse findById( @PathVariable Long id ) {
+    return userMapper.userToResponse( pgUserService.findById( id ) );
   }
 
   @PostMapping
-  public ResponseEntity<UserResponse> create( @RequestBody @Valid UserRequest request ) {
+  public UserResponse create( @RequestBody @Valid UserRequest request ) {
     User newUser = pgUserService.save( userMapper.userRequestToUser( request )  );
 
-    return ResponseEntity.status( HttpStatus.CREATED )
-                         .body( userMapper.userToResponse( newUser ) );
+    return userMapper.userToResponse( newUser );
   }
 
   @PutMapping("/{id}")
-  public ResponseEntity<UserResponse> update( @PathVariable("id") Long userId,
+  public UserResponse update( @PathVariable("id") Long userId,
                                               @RequestBody @Valid UserRequest request ) {
     User updateUser = pgUserService.update( userMapper.requestToUser( userId, request ) );
 
-    return ResponseEntity.ok( userMapper.userToResponse( updateUser ) );
+    return userMapper.userToResponse( updateUser );
   }
 
   @DeleteMapping("/{id}")
-  public ResponseEntity<Void> delete( @PathVariable Long id ) {
+  public void delete( @PathVariable Long id ) {
     pgUserService.deleteById( id );
-
-    return ResponseEntity.noContent().build();
   }
 }
