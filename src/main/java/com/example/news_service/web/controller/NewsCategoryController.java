@@ -12,8 +12,6 @@ import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -32,10 +30,8 @@ public class NewsCategoryController {
           tags = { "category" }
   )
   @GetMapping
-  public ResponseEntity<NewsCategoryListResponse> findAll( @Valid PagesRequest pagesRequest ) {
-    return ResponseEntity.ok(
-            mapper.newsCategoryListToNewsCategoryListResponse( categoryService.findAll( pagesRequest ) )
-    );
+  public NewsCategoryListResponse findAll( @Valid PagesRequest pagesRequest ) {
+    return mapper.newsCategoryListToNewsCategoryListResponse( categoryService.findAll( pagesRequest ) );
   }
 
   @Operation(
@@ -45,10 +41,8 @@ public class NewsCategoryController {
   )
   @GetMapping("/{id}")
 
-  public ResponseEntity<NewsCategoryResponse> findById( @PathVariable @Parameter(description = "ID категории новости") Long id ) {
-    return ResponseEntity.ok(
-            mapper.newsCategoryToResponse( categoryService.findById( id ) )
-    );
+  public NewsCategoryResponse findById( @PathVariable @Parameter(description = "ID категории новости") Long id ) {
+    return mapper.newsCategoryToResponse( categoryService.findById( id ) );
   }
 
   @Operation(
@@ -57,11 +51,10 @@ public class NewsCategoryController {
           tags = { "category" }
   )
   @PostMapping
-  public ResponseEntity<NewsCategoryResponse> create( @RequestBody @Valid NewsCategoryRequest request ) {
+  public NewsCategoryResponse create( @RequestBody @Valid NewsCategoryRequest request ) {
     NewsCategory newNewsCategory = categoryService.save( mapper.requestToNewsCategory( request ) );
 
-    return ResponseEntity.status( HttpStatus.CREATED )
-                         .body( mapper.newsCategoryToResponse( newNewsCategory ) );
+    return mapper.newsCategoryToResponse( newNewsCategory );
   }
 
   @Operation(
@@ -70,11 +63,11 @@ public class NewsCategoryController {
           tags = { "category" }
   )
   @PutMapping("/{id}")
-  public ResponseEntity<NewsCategoryResponse> update( @PathVariable @Parameter(description = "ID категории новости") Long id,
+  public NewsCategoryResponse update( @PathVariable @Parameter(description = "ID категории новости") Long id,
                                                       @RequestBody @Valid NewsCategoryRequest request ) {
     NewsCategory updateCategory = categoryService.update( mapper.requestToNewsCategory( id, request ) );
 
-    return ResponseEntity.ok( mapper.newsCategoryToResponse( updateCategory ) );
+    return mapper.newsCategoryToResponse( updateCategory );
   }
 
   @Operation(
@@ -83,10 +76,8 @@ public class NewsCategoryController {
           tags = { "category" }
   )
   @DeleteMapping("/{id}")
-  public ResponseEntity<Void> deleteById( @PathVariable @Parameter(description = "ID категории новости") Long id ) {
+  public void deleteById( @PathVariable @Parameter(description = "ID категории новости") Long id ) {
     categoryService.deleteById( id );
-
-    return ResponseEntity.noContent().build();
   }
 
 }
