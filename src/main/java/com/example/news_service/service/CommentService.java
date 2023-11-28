@@ -14,12 +14,8 @@ public interface CommentService {
 
   Comment save( Comment comment );
 
-  Comment saveWithUser( User user, Comment comment, Long newsId );
+  Comment update( Long id, Comment comment );
 
-  Comment prepareUpdate( Long id, String text );
-
-  Comment update( Comment comment, String paramNewsUserId );
-
-  void deleteById( Long id, String paramNewsUserId );
+  void deleteById( Long id );
 
 }

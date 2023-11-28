@@ -8,6 +8,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import com.example.news_service.web.dto.PagesRequest;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -21,36 +22,34 @@ public class UserController {
   private final UserMapper userMapper;
 
   @GetMapping
+  @PreAuthorize( "hasAnyAuthority('ROLE_ADMIN')" )
   public UserListResponse findAll( @Valid PagesRequest pagesRequest ) {
     return userMapper.userListToUserListResponse( pgUserService.findAll( pagesRequest ) );
   }
 
   @GetMapping("/withNews")
+  @PreAuthorize( "hasAnyAuthority('ROLE_ADMIN')" )
   public UserWithNewsListResponse findAllWithNews( @Valid PagesRequest pagesRequest ) {
     return userMapper.userWithNewsListToUserListResponse( pgUserService.findAll( pagesRequest ) );
   }
 
   @GetMapping("/{id}")
+  @PreAuthorize( "hasAnyAuthority('ROLE_USER', 'ROLE_ADMIN', 'ROLE_MODERATOR')" )
   public UserResponse findById( @PathVariable Long id ) {
     return userMapper.userToResponse( pgUserService.findById( id ) );
   }
 
-  @PostMapping
-  public UserResponse create( @RequestBody @Valid UserRequest request ) {
-    User newUser = pgUserService.save( userMapper.userRequestToUser( request )  );
-
-    return userMapper.userToResponse( newUser );
-  }
-
   @PutMapping("/{id}")
+  @PreAuthorize( "hasAnyAuthority('ROLE_USER', 'ROLE_ADMIN', 'ROLE_MODERATOR')" )
   public UserResponse update( @PathVariable("id") Long userId,
-                                              @RequestBody @Valid UserRequest request ) {
+                              @RequestBody @Valid UserRequest request ) {
     User updateUser = pgUserService.update( userMapper.requestToUser( userId, request ) );
 
     return userMapper.userToResponse( updateUser );
   }
 
   @DeleteMapping("/{id}")
+  @PreAuthorize( "hasAnyAuthority('ROLE_USER', 'ROLE_ADMIN', 'ROLE_MODERATOR')" )
   public void delete( @PathVariable Long id ) {
     pgUserService.deleteById( id );
   }

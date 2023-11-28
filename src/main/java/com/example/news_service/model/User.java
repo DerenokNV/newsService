@@ -4,7 +4,9 @@ import jakarta.persistence.*;
 import lombok.*;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 @Data
 @AllArgsConstructor
@@ -22,6 +24,15 @@ public class User {
   private String lastName;
 
   private String email;
+
+  private String password;
+
+  @ElementCollection(targetClass = RoleType.class, fetch = FetchType.EAGER)
+  @JoinTable(name = "user_roles", joinColumns = @JoinColumn(name = "user_id"))
+  @Column(name = "roles", nullable = false)
+  @Enumerated(EnumType.STRING)
+  @Builder.Default
+  private Set<RoleType> roles = new HashSet<>();
 
   @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
   @ToString.Exclude

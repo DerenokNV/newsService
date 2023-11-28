@@ -5,6 +5,7 @@ import com.example.news_service.model.User;
 import com.example.news_service.web.dto.PagesRequest;
 import com.example.news_service.web.dto.news.NewsFilterRequest;
 
+import java.security.Principal;
 import java.util.List;
 
 public interface NewsService {
@@ -15,11 +16,9 @@ public interface NewsService {
 
   News findById( Long id );
 
-  News save( News news );
+  News save( News news, Principal principal );
 
-  News saveWithUser( User user, News news, Long categoryId );
+  News update( News news );
 
-  News update( News news, String paramNewsUserId );
-
-  void deleteById( Long id, String paramNewsUserId );
+  void deleteById( Long id );
 }

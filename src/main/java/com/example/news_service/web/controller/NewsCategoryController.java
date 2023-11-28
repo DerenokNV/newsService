@@ -12,6 +12,7 @@ import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -30,6 +31,7 @@ public class NewsCategoryController {
           tags = { "category" }
   )
   @GetMapping
+  @PreAuthorize( "hasAnyAuthority('ROLE_USER', 'ROLE_ADMIN', 'ROLE_MODERATOR')" )
   public NewsCategoryListResponse findAll( @Valid PagesRequest pagesRequest ) {
     return mapper.newsCategoryListToNewsCategoryListResponse( categoryService.findAll( pagesRequest ) );
   }
@@ -40,7 +42,7 @@ public class NewsCategoryController {
           tags = { "category" }
   )
   @GetMapping("/{id}")
-
+  @PreAuthorize( "hasAnyAuthority('ROLE_USER', 'ROLE_ADMIN', 'ROLE_MODERATOR')" )
   public NewsCategoryResponse findById( @PathVariable @Parameter(description = "ID категории новости") Long id ) {
     return mapper.newsCategoryToResponse( categoryService.findById( id ) );
   }
@@ -51,6 +53,7 @@ public class NewsCategoryController {
           tags = { "category" }
   )
   @PostMapping
+  @PreAuthorize( "hasAnyAuthority('ROLE_ADMIN', 'ROLE_MODERATOR')" )
   public NewsCategoryResponse create( @RequestBody @Valid NewsCategoryRequest request ) {
     NewsCategory newNewsCategory = categoryService.save( mapper.requestToNewsCategory( request ) );
 
@@ -63,6 +66,7 @@ public class NewsCategoryController {
           tags = { "category" }
   )
   @PutMapping("/{id}")
+  @PreAuthorize( "hasAnyAuthority('ROLE_ADMIN', 'ROLE_MODERATOR')" )
   public NewsCategoryResponse update( @PathVariable @Parameter(description = "ID категории новости") Long id,
                                                       @RequestBody @Valid NewsCategoryRequest request ) {
     NewsCategory updateCategory = categoryService.update( mapper.requestToNewsCategory( id, request ) );
@@ -76,6 +80,7 @@ public class NewsCategoryController {
           tags = { "category" }
   )
   @DeleteMapping("/{id}")
+  @PreAuthorize( "hasAnyAuthority('ROLE_ADMIN', 'ROLE_MODERATOR')" )
   public void deleteById( @PathVariable @Parameter(description = "ID категории новости") Long id ) {
     categoryService.deleteById( id );
   }

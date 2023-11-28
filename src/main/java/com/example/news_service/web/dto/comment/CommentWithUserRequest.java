@@ -7,8 +7,7 @@ import lombok.Data;
 import lombok.EqualsAndHashCode;
 
 @Data
-@EqualsAndHashCode(callSuper = true)
-public class CommentWithUserRequest extends UserRequest {
+public class CommentWithUserRequest {
 
   @NotBlank(message = "Комментарий не может быть пустым")
   private String text;

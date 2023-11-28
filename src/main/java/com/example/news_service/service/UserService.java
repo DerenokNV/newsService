@@ -18,4 +18,6 @@ public interface UserService {
   void deleteById( Long id );
 
   List<User> findAllWithNews( PagesRequest pagesRequest );
+
+  User findByFirstName( String firstName );
 }

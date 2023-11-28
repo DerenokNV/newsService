@@ -15,6 +15,8 @@ public interface CommentMapper {
 
   Comment commentCteateRequestToComment( CommentCreateRequest commentCreateRequest );
 
+  Comment commentUpdateRequestToComment( CommentUpdateRequest commentUpdateRequest );
+
   @Mapping(source = "commentId", target = "id")
   Comment requestToComment( Long commentId, CommentUpdateRequest commentRequest );
 
