@@ -1,7 +1,6 @@
 package com.example.news_service.service;
 
 import com.example.news_service.model.Comment;
-import com.example.news_service.model.User;
 import com.example.news_service.web.dto.comment.AllCommentsForNewsRequest;
 
 import java.util.List;

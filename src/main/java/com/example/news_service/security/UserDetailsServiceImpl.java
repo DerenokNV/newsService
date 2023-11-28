@@ -2,10 +2,7 @@ package com.example.news_service.security;
 
 import com.example.news_service.model.User;
 import com.example.news_service.repository.UserRepository;
-import com.example.news_service.service.UserService;
-import com.example.news_service.web.dto.user.UserResponse;
 import lombok.RequiredArgsConstructor;
-import org.springframework.context.annotation.Bean;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;

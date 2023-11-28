@@ -42,6 +42,10 @@ public class UserVerificationBefore {
     }
 
     var currentPrincipal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+    if ( currentPrincipal == null ) {
+      throw new EntityNotFoundException( "Что то пошло не так" );
+    }
+
     List<SimpleGrantedAuthority> roles = null;
     if ( currentPrincipal instanceof AppUserPrincipal ) {
       roles = (List<SimpleGrantedAuthority>)( (AppUserPrincipal) currentPrincipal ).getAuthorities();
