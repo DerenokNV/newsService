@@ -18,7 +18,6 @@ public abstract class NewsMapperDelegate implements NewsMapper {
   public News requestToNews( NewsRequest request ) {
     News news = new News();
     news.setText( request.getText() );
-    news.setUser( userService.findById( request.getUserId() ) );
     news.setCategory( categoryService.findById( request.getCategoryId() ) );
 
     return news;

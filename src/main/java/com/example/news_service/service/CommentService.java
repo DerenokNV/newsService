@@ -1,7 +1,6 @@
 package com.example.news_service.service;
 
 import com.example.news_service.model.Comment;
-import com.example.news_service.model.User;
 import com.example.news_service.web.dto.comment.AllCommentsForNewsRequest;
 
 import java.util.List;
@@ -14,12 +13,8 @@ public interface CommentService {
 
   Comment save( Comment comment );
 
-  Comment saveWithUser( User user, Comment comment, Long newsId );
+  Comment update( Long id, Comment comment );
 
-  Comment prepareUpdate( Long id, String text );
-
-  Comment update( Comment comment, String paramNewsUserId );
-
-  void deleteById( Long id, String paramNewsUserId );
+  void deleteById( Long id );
 
 }

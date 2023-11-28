@@ -14,9 +14,6 @@ public class CommentCreateRequest {
   @NotBlank(message = "Комментарий не может быть пустым")
   private String text;
 
-  @NotNull(message = "Должен быть указан пользователь создавший комментарий")
-  private Long userId;
-
   @NotNull(message = "Комментарий создается к новости, укажите ID новости")
   private Long newsId;
 }

@@ -1,17 +1,16 @@
 package com.example.news_service.service.impl;
 
-import com.example.news_service.aop.UserVerification;
 import com.example.news_service.model.Comment;
 import com.example.news_service.model.News;
-import com.example.news_service.model.User;
 import com.example.news_service.repository.CommentRepository;
+import com.example.news_service.security.AppUserPrincipal;
+import com.example.news_service.security.facadeuser.IAuthenticationFacade;
 import com.example.news_service.service.CommentService;
 import com.example.news_service.service.NewsService;
-import com.example.news_service.service.UserService;
+import com.example.news_service.service.Toolkit;
 import com.example.news_service.web.dto.comment.AllCommentsForNewsRequest;
 import io.swagger.v3.oas.annotations.Operation;
 import jakarta.persistence.EntityNotFoundException;
-import jakarta.transaction.Transactional;
 import lombok.AllArgsConstructor;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
@@ -27,7 +26,7 @@ public class PgCommentService implements CommentService {
 
   private final NewsService newsService;
 
-  private final UserService userService;
+  private final IAuthenticationFacade authenticationFacade;
 
   @Override
   public List<Comment> findAll( AllCommentsForNewsRequest pagesRequest ) {
@@ -47,8 +46,8 @@ public class PgCommentService implements CommentService {
     News news = newsService.findById( comment.getNewsComment().getId() );
     comment.setNewsComment( news );
 
-    User user = userService.findById( comment.getUserComment().getId() );
-    comment.setUserComment( user );
+    AppUserPrincipal principal = (AppUserPrincipal)authenticationFacade.getAuthentication().getPrincipal();
+    comment.setUserComment( principal.getUser() );
 
     return commentRepository.save( comment );
   }
@@ -58,37 +57,32 @@ public class PgCommentService implements CommentService {
           description = "Создать комментарий + пользователя",
           tags = { "news", "user", "comment" }
   )
-
   @Override
-  @Transactional
-  public Comment saveWithUser( User user, Comment comment, Long newsId ) {
-    User newUser = userService.save( user );
-    comment.setUserComment( newUser );
+  public Comment update( Long id, Comment comment ) {
+    Comment updateComment = findById( id );
+    updateComment.setText( comment.getText() );
 
-    News newsInId = new News();
-    newsInId.setId( newsId );
-    comment.setNewsComment( newsInId );
+    String resultCheck = Toolkit.checkUserPrincipalAndUserObject( Toolkit.TypeObject.COMMENT, Toolkit.TypeAction.UPDATE,
+                                                                   updateComment.getUserComment().getId(), authenticationFacade );
 
-    return save( comment );
+    if ( resultCheck != null ) {
+      throw new EntityNotFoundException( resultCheck );
+    }
+
+    return commentRepository.save( updateComment );
   }
 
   @Override
-  public Comment prepareUpdate( Long id, String text ) {
-    Comment currentComment = findById( id );
-    currentComment.setText( text );
+  public void deleteById( Long id ) {
+    Comment deleteComment = findById( id );
 
-    return currentComment;
-  }
+    String resultCheck = Toolkit.checkUserPrincipalAndUserObject( Toolkit.TypeObject.COMMENT, Toolkit.TypeAction.UPDATE,
+                                                                  deleteComment.getUserComment().getId(), authenticationFacade );
 
-  @Override
-  @UserVerification
-  public Comment update( Comment comment, String paramNewsUserId ) {
-    return commentRepository.save( comment );
-  }
+    if ( resultCheck != null ) {
+      throw new EntityNotFoundException( resultCheck );
+    }
 
-  @Override
-  @UserVerification
-  public void deleteById( Long id, String paramNewsUserId ) {
     commentRepository.deleteById( id );
   }
 }

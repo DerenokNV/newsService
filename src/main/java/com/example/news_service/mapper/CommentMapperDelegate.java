@@ -20,7 +20,6 @@ public abstract class CommentMapperDelegate implements CommentMapper{
     Comment comment = new Comment();
     comment.setText( commentCreateRequest.getText() );
     comment.setNewsComment( newsService.findById( commentCreateRequest.getNewsId() ) );
-    comment.setUserComment( userService.findById( commentCreateRequest.getUserId() ) );
 
     return comment;
   }

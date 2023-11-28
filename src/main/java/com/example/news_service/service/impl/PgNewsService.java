@@ -1,23 +1,24 @@
 package com.example.news_service.service.impl;
 
-import com.example.news_service.aop.UserVerification;
 import com.example.news_service.model.News;
 import com.example.news_service.model.NewsCategory;
-import com.example.news_service.model.User;
 import com.example.news_service.repository.NewsRepository;
 import com.example.news_service.repository.NewsSpecification;
+import com.example.news_service.security.AppUserPrincipal;
+import com.example.news_service.security.facadeuser.IAuthenticationFacade;
 import com.example.news_service.service.NewsCategoryService;
 import com.example.news_service.service.NewsService;
-import com.example.news_service.service.UserService;
+import com.example.news_service.service.Toolkit;
 import com.example.news_service.web.dto.PagesRequest;
 import com.example.news_service.web.dto.news.NewsFilterRequest;
-import io.swagger.v3.oas.annotations.Operation;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.stereotype.Service;
 
+import java.security.Principal;
 import java.text.MessageFormat;
 import java.util.List;
 
@@ -29,9 +30,9 @@ public class PgNewsService implements NewsService {
 
   private final NewsRepository repository;
 
-  private final UserService userService;
-
   private final NewsCategoryService categoryService;
+
+  private final IAuthenticationFacade authenticationFacade;
 
   @Override
   public List<News> filterBy( NewsFilterRequest filter ) {
@@ -56,9 +57,12 @@ public class PgNewsService implements NewsService {
   }
 
   @Override
-  public News save( News news ) {
-    User user = userService.findById( news.getUser().getId() );
-    news.setUser( user );
+  public News save( News news, Principal principal ) {
+    if ( !( principal instanceof UsernamePasswordAuthenticationToken ) || !( ( ( UsernamePasswordAuthenticationToken )principal ).getPrincipal() instanceof AppUserPrincipal )  ) {
+      throw new EntityNotFoundException( "Никто не авторизирован " );
+    }
+
+    news.setUser( ( (AppUserPrincipal)( ( (UsernamePasswordAuthenticationToken)principal ).getPrincipal() ) ).getUser() );
 
     NewsCategory category = categoryService.findById( news.getCategory().getId() );
     news.setCategory( category );
@@ -66,31 +70,34 @@ public class PgNewsService implements NewsService {
     return repository.save( news );
   }
 
-  @Operation(
-          summary = "Создать новость + пользователя",
-          description = "Создать новость + пользователя",
-          tags = { "news", "user" }
-  )
   @Override
-  public News saveWithUser( User user, News news, Long categoryId ) {
-    User newUser = userService.save( user );
-    NewsCategory category = categoryService.findById( categoryId );
-    news.setCategory( category );
-    news.setUser( newUser );
+  public News update( News news ) {
+    News updateNews = findById( news.getId() );
+    updateNews.setText( news.getText() );
+    updateNews.setCategory( news.getCategory() );
 
-    return repository.save( news );
-  }
+    String resultCheck = Toolkit.checkUserPrincipalAndUserObject( Toolkit.TypeObject.NEWS, Toolkit.TypeAction.UPDATE,
+                                                                  updateNews.getUser().getId(), authenticationFacade );
 
-  @Override
-  @UserVerification
-  public News update( News news, String paramNewsUserId ) {
-    return repository.save( news );
+    if ( resultCheck != null ) {
+      throw new EntityNotFoundException( resultCheck );
+    }
+
+    return repository.save( updateNews );
   }
 
 
   @Override
-  @UserVerification
-  public void deleteById( Long id, String paramNewsUserId ) {
+  public void deleteById( Long id ) {
+    News deleteNews = findById( id );
+
+    String resultCheck = Toolkit.checkUserPrincipalAndUserObject( Toolkit.TypeObject.NEWS, Toolkit.TypeAction.DELETE,
+                                                                  deleteNews.getUser().getId(), authenticationFacade );
+
+    if ( resultCheck != null ) {
+      throw new EntityNotFoundException( resultCheck );
+    }
+
     repository.deleteById( id );
   }
 }

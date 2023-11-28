@@ -14,9 +14,6 @@ public class NewsRequest {
   @NotBlank(message = "Текст новости должен быть заполнен")
   private String text;
 
-  @NotNull(message = "Должен быть указан пользователь создавший новость")
-  private Long userId;
-
   @NotNull(message = "Должна быть указана категория для размещения новости")
   private Long categoryId;
 }
